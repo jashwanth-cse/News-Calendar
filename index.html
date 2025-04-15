@@ -165,8 +165,8 @@
       let output = `<h2>🗓 News on ${date}</h2>`;
 
       for (const cat of categories) {
-        const proxy = "https://cors-anywhere.herokuapp.com/";
-        const url = proxy+`http://api.mediastack.com/v1/news?access_key=${accessKey}&keywords=${cat.name}&date=${date}&languages=en&limit=4`;
+        
+        const url = `https://api.mediastack.com/v1/news?access_key=${accessKey}&keywords=${cat.name}&date=${date}&languages=en&limit=4`;
 
         try {
           const res = await fetch(url);
