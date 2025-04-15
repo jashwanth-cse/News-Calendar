@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>📅 Stylish News by Date</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #dfe9f3, #ffffff);
+      min-height: 100vh;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #333;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #2c3e50;
+      margin-bottom: 30px;
+      animation: fadeInDown 0.6s ease-in-out;
+    }
+
+    .form-box {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 25px 30px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      margin-bottom: 40px;
+      text-align: center;
+      animation: fadeInUp 0.8s ease-in-out;
+    }
+
+    input[type="date"], button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      transition: 0.3s;
+    }
+
+    input[type="date"]:hover {
+      border-color: #3498db;
+    }
+
+    button {
+      background: #3498db;
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #2980b9;
+    }
+
+    .category-section {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 30px;
+      max-width: 850px;
+      width: 100%;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+      animation: zoomIn 0.6s ease;
+    }
+
+    .category-section h2 {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      color: #2d3436;
+    }
+
+    .article {
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed #ccc;
+    }
+
+    .article-title {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #333;
+    }
+
+    .article a {
+      color: #2980b9;
+      text-decoration: none;
+    }
+
+    .article a:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes fadeInDown {
+      from {opacity: 0; transform: translateY(-20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    @keyframes fadeInUp {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    @keyframes zoomIn {
+      from {opacity: 0; transform: scale(0.95);}
+      to {opacity: 1; transform: scale(1);}
+    }
+
+    #newsContainer > h2 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      .category-section h2 { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🗞️ Search News by Date</h1>
+
+  <div class="form-box">
+    <input type="date" id="newsDate">
+    <button onclick="fetchAllCategories()">Get News</button>
+  </div>
+
+  <div id="newsContainer"></div>
+
+  <script>
+    const categories = [
+      { name: "Technology", emoji: "💻" },
+      { name: "Sports", emoji: "⚽" },
+      { name: "Business", emoji: "💼" },
+      { name: "Health", emoji: "🧬" },
+      { name: "Science", emoji: "🔬" },
+      { name: "Entertainment", emoji: "🎬" }
+    ];
+
+    async function fetchAllCategories() {
+      const date = document.getElementById("newsDate").value;
+      const accessKey = "f21424b82d16140c0ffabbdf2ea5eb3a"; // Replace with your Mediastack API Key
+      const newsContainer = document.getElementById("newsContainer");
+      newsContainer.innerHTML = `<p>⏳ Fetching news for ${date}...</p>`;
+
+      let output = `<h2>🗓 News on ${date}</h2>`;
+
+      for (const cat of categories) {
+        const url = `http://api.mediastack.com/v1/news?access_key=${accessKey}&keywords=${cat.name}&date=${date}&languages=en&limit=4`;
+
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+
+          if (data.data && data.data.length > 0) {
+            output += `
+              <div class="category-section">
+                <h2>${cat.emoji} ${cat.name}</h2>
+            `;
+
+            data.data.forEach(article => {
+              output += `
+                <div class="article">
+                  <div class="article-title">${article.title}</div>
+                  <a href="${article.url}" target="_blank">Read more →</a>
+                </div>
+              `;
+            });
+
+            output += `</div>`;
+          }
+        } catch (err) {
+          console.error(`Error fetching ${cat.name} news:`, err);
+        }
+      }
+
+      newsContainer.innerHTML = output;
+    }
+  </script>
+
+</body>
+</html>
